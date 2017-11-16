@@ -1,0 +1,13 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{csvsimple}
+\usepackage{siunitx,array,booktabs}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\author{Elijah Andrews}
+\begin{document}
+\csvautotabular[table head=\toprule\bfseries M & \bfseries $\mu$ (deg.) & \bfseries $\nu$ (deg.)\\\midrule\csvlinetotablerow\\, before reading=\centering\sisetup{table-number-alignment=center}]{argon_ift.csv}
+\end{document}
