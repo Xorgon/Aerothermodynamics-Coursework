@@ -5,9 +5,46 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{csvsimple}
+
+\makeatletter
+\csvset{
+  autotabularcenter/.style={
+    file=#1,
+    after head=\csv@pretable\begin{tabular}{|*{\csv@columncount}{c|}}\csv@tablehead,
+    table head=\hline\csvlinetotablerow\\\hline,
+    late after line=\\,
+    table foot=\\\hline,
+    late after last line=\csv@tablefoot\end{tabular}\csv@posttable,
+    command=\csvlinetotablerow},
+  autobooktabularcenter/.style={
+    file=#1,
+    after head=\csv@pretable\begin{tabular}{*{\csv@columncount}{c}}\csv@tablehead,
+    table head=\toprule\csvlinetotablerow\\\midrule,
+    late after line=\\,
+    table foot=\\\bottomrule,
+    late after last line=\csv@tablefoot\end{tabular}\csv@posttable,
+    command=\csvlinetotablerow},
+}
+\makeatother
+\newcommand{\csvautotabularcenter}[2][]{\csvloop{autotabularcenter={#2},#1}}
+\newcommand{\csvautobooktabularcenter}[2][]{\csvloop{autobooktabularcenter={#2},#1}}
+
 \usepackage{siunitx,array,booktabs}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
 \author{Elijah Andrews}
 \begin{document}
-\csvautotabular[table head=\toprule\bfseries M & \bfseries $\mu$ (deg.) & \bfseries $\nu$ (deg.)\\\midrule\csvlinetotablerow\\, before reading=\centering\sisetup{table-number-alignment=center}]{argon_ift.csv}
+
+\begin{center}
+\begin{large}
+\textbf{Lookup Table} ($\gamma=5/3$)
+\end{large}
+\\\csvautobooktabularcenter[table head=\toprule\bfseries M & \bfseries $\mu$ (deg.) & \bfseries $\nu$ (deg.)\\\midrule\csvlinetotablerow\\, before reading=\centering]{argon_ift.csv}
+\end{center}
+
+\begin{center}
+\begin{large}
+\textbf{Method of Characteristics Table} ($\gamma=5/3$, $M_{des}=2.4$)
+\end{large}
+\csvautobooktabularcenter[table head=\toprule\bfseries Point & \bfseries $\mathbf{R^{+}}$ & \bfseries $\mathbf{R^{-}}$ & \bfseries $\mathbf{\theta}$ & \bfseries $\mathbf{\nu}$ & \bfseries M & \bfseries $\mathbf{\mu}$ & \bfseries $\mathbf{\theta + \mu}$ & \bfseries $\mathbf{\theta - \mu}$ & \bfseries x & \bfseries y\\\midrule\csvlinetotablerow\\, before reading=\centering]{MoC.csv}
+\end{center}
 \end{document}
