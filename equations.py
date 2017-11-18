@@ -16,3 +16,7 @@ def prandtl_meyer(M, gamma, degrees=True):
         return math.degrees(rads)
     else:
         return rads
+
+
+def area_ratio(M, gamma):
+    return ((2 * (1 + M * M * (gamma - 1) / 2) / (gamma + 1)) ** ((gamma + 1) / (2 * (gamma - 1)))) / M
