@@ -3,6 +3,8 @@ import math
 from equations import prandtl_meyer, mach_angle
 
 
+# TODO: Separate Point into different versions of Point for starting, internal, and wall points.
+
 class Point:
     pid = None
 
@@ -132,15 +134,20 @@ class Point:
         self.R_minus = self.get_nu() + self.theta
 
     def set_all(self):
-        self.set_M()
-        self.set_theta()
-        self.set_x()
-        self.set_y()
-        self.set_Rs()
+        if self.M is None:
+            self.set_M()
+        if self.theta is None:
+            self.set_theta()
+        if self.x is None:
+            self.set_x()
+        if self.y is None:
+            self.set_y()
+        if self.R_minus is None and self.R_plus is None:
+            self.set_Rs()
         return self.M, self.theta, self.x, self.y
 
     def full_moc_output(self):
-        return "{0},{1:.2f},{2:.2f},{3:.2f},{4:.2f},{5:.2f},{6:.2f},{7:.2f},{8:.2f},{9:.2f},{10:.2f}" \
+        return "{0},{1:.3f},{2:.3f},{3:.3f},{4:.3f},{5:.3f},{6:.3f},{7:.3f},{8:.3f},{9:.3f},{10:.3f}" \
             .format(self.pid, self.R_plus, self.R_minus, self.theta, self.get_nu(), self.M, self.get_mu(),
                     self.theta + self.get_mu(), self.theta - self.get_mu(), self.x, self.y)
 
