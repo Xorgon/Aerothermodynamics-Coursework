@@ -12,7 +12,8 @@ theta_max = prandtl_meyer(M_e, gamma) / 2
 decimal = theta_max % 1
 integer = theta_max - decimal
 
-initial_thetas = [decimal, integer / 3 + decimal, 2 * integer / 3 + decimal, theta_max]
+# initial_thetas = [decimal, integer / 3 + decimal, 2 * integer / 3 + decimal, theta_max]
+initial_thetas = [0.400, (theta_max - 0.400)/3 + 0.4, 2*(theta_max - 0.400)/3 + 0.4, theta_max]
 print("Initial Thetas: " + str(initial_thetas))
 
 ift = IFT(1, 3, 0.01, gamma)
@@ -42,10 +43,10 @@ p_13 = Point("13", ift, gamma, b=p_11, y=0)
 p_14 = Point("14", ift, gamma, b=p_12, a=p_13, wall=True)
 
 propagation_points = [p_1, p_2, p_3, p_4, p_5, p_6, p_7, p_8, p_9, p_10, p_11, p_12, p_13, p_14]
-for p in propagation_points:
-    p.set_all()
 
 for p in start_points + propagation_points:
     print(p)
 
 points_to_csv("../Report/MoC", start_points + propagation_points)
+print("Final point area ratio = {0:.5f}".format(area_ratio(p_14.M, gamma)))
+print("Final point area ratio = {0:.5f}".format(area_ratio(M_e, gamma)))
