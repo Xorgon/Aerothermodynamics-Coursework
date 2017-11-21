@@ -153,3 +153,19 @@ class Point:
 
     def __str__(self):
         return self.full_moc_output()
+
+
+class InitChar:
+    cid = None
+    points = None
+
+    def __init__(self, cid, init_point):
+        self.cid = cid
+        self.points = [init_point]
+
+    def get_last(self):
+        return self.points[-1]
+
+    def add_point(self, point):
+        self.points.append(point)
+        return point
