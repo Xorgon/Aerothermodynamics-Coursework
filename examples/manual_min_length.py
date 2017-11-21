@@ -1,6 +1,6 @@
-import numpy as np
+# A simple minimum length solution set manually.
 
-from fileio import array_to_csv, points_to_csv
+from fileio import points_to_csv
 from ift import IFT
 from objects import *
 from equations import *
@@ -12,7 +12,6 @@ theta_max = prandtl_meyer(M_e, gamma) / 2
 decimal = theta_max % 1
 integer = theta_max - decimal
 
-# initial_thetas = [decimal, integer / 3 + decimal, 2 * integer / 3 + decimal, theta_max]
 initial_thetas = [0.400, (theta_max - 0.400)/3 + 0.4, 2*(theta_max - 0.400)/3 + 0.4, theta_max]
 print("Initial Thetas: " + str(initial_thetas))
 
