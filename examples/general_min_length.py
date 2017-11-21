@@ -1,75 +1,55 @@
-from ift import IFT
-from objects import *
 from equations import *
-import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
+import solver
 
 gamma = 5 / 3
 M_e = 2.4
-theta_max = prandtl_meyer(M_e, gamma) / 2
 
-decimal = theta_max % 1
-integer = theta_max - decimal
+# Run the MoC solver with its default values.
+init_chars, wall_points = solver.solve_min_length_nozzle(M_e, gamma)
 
-# init_thetas = [decimal, integer / 3 + decimal, 2 * integer / 3 + decimal, theta_max]
-init_thetas = np.logspace(np.log10(1e-2), np.log10(theta_max), 100, base=10)
-# init_thetas = np.linspace(1e-2, theta_max, 100)
-
-np.append(init_thetas, theta_max)
-
-ift = IFT(1, 3, 0.01, gamma)
-
-init_points = []
-for theta in init_thetas:
-    init_points.append(Point(str(theta), ift, gamma, theta=theta, x=0, y=1, set_all=False))
-
-internal_points = []
-wall_points = [init_points[-1]]
-symmetry_points = []
-for i in range(len(init_points)):
-    init_p = init_points[i]
-    init_p.set_M()
-    last_p = Point(init_p.pid + "-sym", ift, gamma, b=init_p, y=0)
-    symmetry_points.append(last_p)
-    for j in range(i + 1, len(init_points)):
-        last_p = Point(init_p.pid + "-" + init_points[j].pid, ift, gamma, a=last_p, b=init_points[j])
-        internal_points.append(last_p)
-    wall_points.append(Point(init_p.pid + "-wall", ift, gamma, b=wall_points[-1], a=last_p, wall=True))
-
-xs = []
-ys = []
-area_ratios = []
+# Get coordinates for all wall points.
+wall_xs = []
+wall_ys = []
 for p in wall_points:
-    xs.append(p.x)
-    ys.append(p.y)
-    area_ratios.append(area_ratio(p.M, gamma))
+    wall_xs.append(p.x)
+    wall_ys.append(p.y)
 
+# Get coordinates for all points.
 all_p_xs = []
 all_p_ys = []
-for p in init_points + symmetry_points + internal_points + wall_points:
-    all_p_xs.append(p.x)
-    all_p_ys.append(p.y)
+for char in init_chars:
+    for p in char.points:
+        if all_p_xs.count(p.x) == 0 or all_p_ys.count(p.y) == 0:
+            all_p_xs.append(p.x)
+            all_p_ys.append(p.y)
 
+# Create a line of symmetry that can also be used to show wall point distribution along the x axis.
 flat = []
-for x in xs:
+for x in wall_xs:
     flat.append(0)
 
 fig = plt.figure()
 fig.patch.set_facecolor('white')
 ax = fig.gca()
-ax.plot(xs, ys)
-ax.plot(xs[-1], area_ratios[-1], 'ro')
-# ax.plot(all_p_xs, all_p_ys, 'gx')  # Show all points.
-ax.annotate("$A/A^{*}$", (xs[-1], area_ratios[-1]), (xs[-1] - 0.6, area_ratios[-1] - 0.2),
+
+ax.plot(wall_xs, wall_ys)  # Nozzle contour plot.
+ax.plot(wall_xs, wall_ys, 'gx')  # Wall point distribution plot
+
+# ax.plot(all_p_xs, all_p_ys, 'gx')  # Uncomment to show all points.
+
+# Show the area ratio on the plot.
+a_ratio = area_ratio(M_e, gamma)
+ax.plot(wall_xs[-1], a_ratio, 'ro')
+ax.annotate("$A/A^{*}$", (wall_xs[-1], a_ratio), (wall_xs[-1] - 0.6, a_ratio - 0.2),
             arrowprops={"arrowstyle": "->"})
-ax.plot(xs, flat, 'r--')  # Change to 'ro' to show point distribution.
-ax.set_xlabel(r'$x/r_{a}$', )
-ax.set_ylabel(r'$y/r_{a}$')
-ax.axis([0, xs[-1] + 0.1, -0.1, ys[-1] + 0.1])
-# plt.legend([explicit_avgs_plot, implicit_avgs_plot], ['Explicit', 'Implicit'], loc=4)
+
+ax.plot(wall_xs, flat, 'r--')  # Draws the line of symmetry. Change to 'ro' to show wall point distribution.
+ax.set_xlabel(r'$x/r_{a}$')  # Label the x axis.
+ax.set_ylabel(r'$y/r_{a}$')  # Label the y axis.
+ax.axis([0, wall_xs[-1] + 0.1, -0.1, wall_ys[-1] + 0.1])  # Set axis bounds to show full contour.
 plt.show()
 
-print("Area ratio at final point = {0:.3f}".format(area_ratios[-1]))
-print("Final point x coordinate = {0:.3f}".format(xs[-1]))
-print("Final point y coordinate = {0:.3f}".format(ys[-1]))
+# Output useful values for analysis.
+print("Area ratio at final point = {0:.3f}".format(a_ratio))
+print("Final point y coordinate = {0:.3f}".format(wall_ys[-1]))
